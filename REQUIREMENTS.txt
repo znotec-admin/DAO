@@ -1,0 +1,163 @@
+FOLIODAO
+Backend / blockchain requirements
+Plus a small frontend slice (wallet + vote UI only)
+
+Role      Backend / blockchain developer
+          plus wallet / vote screens if needed
+Network   Polygon Mainnet (137)
+App       Next.js 14.2 Pages Router, wallet-signed APIs
+
+Move contract I/O to viem. Harden write APIs.
+Make create, vote, and execute reliable after the wallet confirms.
+Do not break live createProposal, vote, or exeProposal.
+This is not a token-sale project.
+
+GOAL
+Members create proposals, vote, close, and execute on Polygon.
+After the wallet confirms, the API binds the on-chain proposal id
+and re-reads tallies from the contract. The UI must show those
+chain results, not a client-side guess.
+Public name: FolioDAO. Older names may appear in git history.
+Prefer an ABI compatibility layer over breaking mainnet.
+
+MUST
+Keep Pages Router and wagmi 2.19
+Trust chain tallies, not the client
+Keep nonce and wallet signature on writes
+Node 18 or newer. One npm run dev on Windows
+Small, reviewable PRs
+
+MUST NOT
+App Router, wagmi 3, Next 15 or 16
+Change live function selectors without a redeploy plan
+Commit .env or put keys in _constants
+Add ICO, presale, or buy-token flows
+Drive-by refactors or a full rewrite
+Marketing copy, CSS theme, logo, or jQuery header rewrite
+
+STACK
+API                   pages/api/
+Auth, chain, votes    utils/auth.ts, web3api.ts, chainRead.ts,
+                      proposalApi.ts, voteMath.ts
+Contract I/O today    web3.js 1.9 in web3api.ts  →  migrate to viem
+Wallets (done)        wagmi 2.19 + viem, WalletConnect v2 optional
+Vote / reward UI      pages/vote, pages/reward
+ABIs                  abi/ABI.json, HODL.json, FTO.json, SPLITTER.json
+New-deploy source     contracts/FolioDAO.sol, FolioToken.sol,
+                      PaymentSplitter.sol
+Addresses             NEXT_PUBLIC_*_ADDRESS
+                      defaults in utils/_constants.ts
+Scripts               npm run dev | build | start
+                      via scripts/next-with-env.js
+
+ON-CHAIN (PRESERVE)
+checkAbleToProposal / checkAbleToVote — eligibility
+createProposal(id, start, end, receiver, amount) — emits CreatedProposal
+vote(proposalId, yes) — one vote per wallet while live
+closeProposal(proposalId) — required before cancel of a live proposal
+exeProposal(proposalId) — owner only, after end_at, if approved
+
+Approval    votes_yes * 100 >= (votes_yes + votes_no) * approvalPercent
+            default 51
+Weight      FOLIO / HODL balance if floor met, otherwise 1
+            floors default 1e18
+Lists       live start < now < end · pending start > now · past end < now
+            periods 10m / 24h / 48h / 72h
+Splitters   tile if shares(account) > 0
+            release if releasable(token, account) > 0
+Note        Deployed HODL / FTO may still use old names (e.g. addrWerthanMoni).
+            Do not rename those calls unless we redeploy.
+
+API
+Read (no signature)
+    GET  /api/health
+    GET  /api/proposals
+    GET  /api/proposals/live
+    GET  /api/proposals/pending
+    GET  /api/proposals/past
+    GET  /api/proposals/:id
+
+Write (wallet signature)
+    POST /api/proposals/create       signer is the proposer
+    POST /api/proposals/sync         bind on-chain id from CreatedProposal
+    POST /api/proposals/vote         re-read tallies from chain
+    POST /api/proposals/cancel       live rows need closeProposal first
+    POST /api/proposals/delete       signer is the proposer
+    POST /api/proposals/attachfile   see uploads
+
+Signature message
+    FOLIODAO
+    action:<create|sync|vote|cancel|delete|attachfile>
+    address:<lowercase wallet>
+    timestamp:<unix ms>
+    extra:<proposal id when required>
+    nonce:<16-64 hex>
+
+Signature rules
+    Signer recovers to address. Age 5 minutes or less.
+    Nonce is one-use (about 10 minute TTL).
+    create, sync, cancel, delete — signer is the proposer
+    sync, vote, cancel, delete — extra is the proposal id
+    Tallies are strings, hydrated from chain
+
+Uploads today
+    public/uploads, generated name, 5 MB
+    pdf, png, jpg, jpeg, gif, webp, doc, docx, txt
+    HTML via sanitize-html
+
+SCOPE — BACKEND / BLOCKCHAIN (required)
+    1. Failed or rejected wallet tx on create / vote / cancel
+       must be retryable. No stuck “pending forever” state.
+    2. Replace web3.js 1.9 with viem. Same ABIs and addresses.
+    3. Harden writes: validate bodies, rate-limit, stable errors.
+       Keep signature and nonce.
+    4. Move uploads off public /uploads
+       (object storage or authenticated download).
+    5. Tests: create, vote, cancel, nonce replay, tally hydration.
+    6. Docs: env list, live ABI vs Folio source.
+    npm test, npm run lint, and npm run build must stay green.
+
+SCOPE — FRONTEND (required, vote / wallet only)
+    1. Create / vote / execute: pending, rejected, and confirmed
+       states in the wallet UI. Clear error if the user rejects.
+    2. Vote and reward lists show chain tallies and approval,
+       not numbers the browser invents.
+    3. Show eligibility errors from checkAbleToProposal
+       and checkAbleToVote before the user sends a tx.
+    4. After confirm, refresh the proposal from chain
+       (id, votes_yes, votes_no, approved).
+
+Optional (written approval)
+    Anyone-can-execute after the window if approved, or a timelock
+    Redeploy FolioDAO.sol and switch NEXT_PUBLIC_HODLDAO_ADDRESS
+    RPC health on GET /api/health
+    Splitter release UX on the reward page
+
+Out of scope
+    Home / FAQ / about / blog copy
+    CSS theme, logo, jQuery header / meanmenu
+    Tokenomics, secrets in source, wagmi 3 / App Router
+
+ENVIRONMENT
+Required
+    NEXT_PUBLIC_RPC_URL=
+    NEXT_PUBLIC_API_BASE_URL=/api/
+    NEXT_PUBLIC_NETWORK_CHAIN_ID=137
+    NEXT_PUBLIC_NETWORK_CHAIN_NAME=polygon-mainnet
+    NEXT_IGNORE_INCORRECT_LOCKFILE=1
+
+Optional
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+    NEXT_PUBLIC_APP_URL
+    NEXT_PUBLIC_*_ADDRESS
+
+Never commit .env.
+
+DONE WHEN
+    Create / vote / cancel can recover from a failed or rejected tx
+    Client tallies never win over the chain
+    web3 is removed or isolated and documented
+    Vote UI shows pending / rejected / confirmed
+    Eligibility is checked before the wallet popup
+    Uploads are not world-writable on the Next origin
+    Lint, tests, and build pass on Node 18 or newer

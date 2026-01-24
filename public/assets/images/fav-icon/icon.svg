@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FolioDAO">
+  <defs>
+    <linearGradient id="folio-fav" x1="56" y1="6" x2="6" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38E0FF"/>
+      <stop offset="42%" stop-color="#3B6BFF"/>
+      <stop offset="100%" stop-color="#C026D3"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#0B0B47"/>
+  <rect x="8" y="8" width="20" height="48" rx="10" fill="url(#folio-fav)"/>
+  <rect x="8" y="8" width="48" height="18" rx="9" fill="url(#folio-fav)"/>
+  <rect x="8" y="30" width="34" height="16" rx="8" fill="url(#folio-fav)"/>
+  <rect x="24" y="11" width="28" height="7" rx="3.5" fill="#fff" opacity="0.2"/>
+</svg>

@@ -1,0 +1,55 @@
+{
+  "name": "folio-dao",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node scripts/next-with-env.js dev",
+    "build": "node scripts/next-with-env.js build",
+    "start": "node scripts/next-with-env.js start",
+    "lint": "next lint",
+    "test": "tsx --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.102.8",
+    "@wagmi/connectors": "^6.2.0",
+    "@wagmi/core": "^2.22.1",
+    "axios": "^1.10.0",
+    "bignumber.js": "^9.1.2",
+    "chart.js": "^4.2.1",
+    "draft-js": "^0.11.7",
+    "draftjs-to-html": "^0.9.1",
+    "formidable": "^2.1.1",
+    "moment": "^2.29.4",
+    "mongoose": "^7.0.3",
+    "mongoose-aggregate-paginate-v2": "^1.0.6",
+    "next": "14.2.35",
+    "react": "18.2.0",
+    "react-currency-format": "^1.1.0",
+    "react-dom": "18.2.0",
+    "react-draft-wysiwyg": "^1.15.0",
+    "react-hook-form": "^7.43.9",
+    "react-modal": "^3.16.1",
+    "react-toastify": "^9.1.2",
+    "sanitize-html": "^2.13.1",
+    "sass": "^1.60.0",
+    "viem": "^2.56.3",
+    "wagmi": "^2.19.5",
+    "web3": "^1.9.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.33"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@types/sanitize-html": "^2.16.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.35",
+    "tsx": "^4.23.13",
+    "typescript": "^5.5.4"
+  }
+}

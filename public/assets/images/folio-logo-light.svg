@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 118" fill="none" role="img" aria-label="FolioDAO">
+  <defs>
+    <linearGradient id="folio-grad-light" x1="124" y1="6" x2="74" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38E0FF"/>
+      <stop offset="42%" stop-color="#3B6BFF"/>
+      <stop offset="100%" stop-color="#C026D3"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(68 0)">
+    <rect x="8" y="8" width="20" height="48" rx="10" fill="url(#folio-grad-light)"/>
+    <rect x="8" y="8" width="48" height="18" rx="9" fill="url(#folio-grad-light)"/>
+    <rect x="8" y="30" width="34" height="16" rx="8" fill="url(#folio-grad-light)"/>
+    <rect x="24" y="11" width="28" height="7" rx="3.5" fill="#fff" opacity="0.2"/>
+  </g>
+  <text x="100" y="102" text-anchor="middle" font-family="Inter, Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="750" letter-spacing="-0.8">
+    <tspan fill="#FFFFFF">Folio</tspan>
+    <tspan fill="url(#folio-grad-light)">DAO</tspan>
+  </text>
+</svg>
